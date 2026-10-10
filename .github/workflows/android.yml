@@ -39,7 +39,21 @@ jobs:
 
       - name: Align Java and Kotlin versions
         run: |
-          python3 - <<'PY'
+          cat >> app/build.gradle.kts <<'EOF'
+
+          android {
+              compileOptions {
+                  sourceCompatibility = org.gradle.api.JavaVersion.VERSION_17
+                  targetCompatibility = org.gradle.api.JavaVersion.VERSION_17
+              }
+          }
+
+          tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+          }
+          EOF
           from pathlib import Path
 
           p = Path("app/build.gradle.kts")
