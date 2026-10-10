@@ -37,6 +37,37 @@ jobs:
 
           rsync -a --exclude='.github/' "$PROJECT_DIR/" ./
 
+      - name: Align Java and Kotlin versions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("app/build.gradle.kts")
+
+          if not p.exists():
+              raise SystemExit("ERROR: app/build.gradle.kts not found")
+
+          s = p.read_text()
+
+          s = s.replace(
+              "JavaVersion.VERSION_1_8",
+              "JavaVersion.VERSION_17"
+          )
+
+          s = s.replace(
+              'jvmTarget = "1.8"',
+              'jvmTarget = "17"'
+          )
+
+          s = s.replace(
+              "jvmTarget = '1.8'",
+              "jvmTarget = '17'"
+          )
+
+          p.write_text(s)
+          print("Java and Kotlin target settings updated where needed.")
+          PY
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
